@@ -1,0 +1,2 @@
+include ':app', ':colordisplay', ':calculator'
+rootProject.name='Practical Lesson 1'
