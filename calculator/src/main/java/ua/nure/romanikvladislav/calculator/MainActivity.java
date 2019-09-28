@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import org.mariuszgromada.math.mxparser.Expression;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String ARG_ROW = "arg_row";
@@ -171,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
         tvField.setText(container.toString());
-        double result = MathUtils.eval(container.toString());
+        double result = new Expression(container.toString()).calculate();
         oldRows.append(container).append(IS).append(result).append(NEW_ROW);
         container.delete(0, container.length());
         container.append(result);
@@ -201,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvResult.setText(ZERO);
         tvOldCalculations.setText(oldRows);
         tvField.setText(container);
+        lastChar = ZERO;
     }
 
     @Override
