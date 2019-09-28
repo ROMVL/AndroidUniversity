@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btnSplit).setOnClickListener(this);
         findViewById(R.id.btnIs).setOnClickListener(this);
         findViewById(R.id.btnRemoveLast).setOnClickListener(this);
+        findViewById(R.id.btnClearAll).setOnClickListener(this);
         tvField = findViewById(R.id.tvRow);
         tvResult = findViewById(R.id.tvResult);
         tvOldCalculations = findViewById(R.id.tvOldRows);
@@ -82,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvField.setText(container.toString());
         lastChar = String.valueOf(container.charAt(container.length() - 1));
         tvResult.setText(result);
-        //calculate();
     }
 
     @Override
@@ -111,12 +111,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void addNewExpression(String expression) {
-        if (container.length() == 1) {
+        if (container.length() == 1 && (container.toString().equals(ZERO) || container.toString().equals(MINUS))) {
             if (expression.equals(MINUS)) {
                 container.delete(0, 1);
                 container.append(expression);
+                lastChar = expression;
+                tvField.setText(container.toString());
+                return;
             }
-            tvField.setText(container.toString());
             return;
         }
         if (!lastChar.equals(PLUS) && !lastChar.equals(MINUS) && !lastChar.equals(MULTIPLY) && !lastChar.equals(DEVIDE)) {
@@ -192,6 +194,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvField.setText(container);
     }
 
+    private void clearAll() {
+        oldRows.delete(0, oldRows.length());
+        container.delete(0, container.length());
+        container.append(ZERO);
+        tvResult.setText(ZERO);
+        tvOldCalculations.setText(oldRows);
+        tvField.setText(container);
+    }
+
     @Override
     public void onClick(View view) {
         int viewId = view.getId();
@@ -246,6 +257,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btnRemoveLast:
                 removeLastChar();
+                break;
+            case R.id.btnClearAll:
+                clearAll();
                 break;
         }
     }

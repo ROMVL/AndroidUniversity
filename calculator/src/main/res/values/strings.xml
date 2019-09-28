@@ -18,4 +18,5 @@
     <string name="split">/</string>
     <string name="empty">Empty</string>
     <string name="backspace"><![CDATA[<-]]></string>
+    <string name="clear_all">Clear All</string>
 </resources>

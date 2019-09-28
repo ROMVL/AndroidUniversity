@@ -114,7 +114,7 @@
         app:layout_constraintEnd_toStartOf="@+id/btnEight"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@id/guidelineVirtiacal"
-        app:layout_constraintTop_toBottomOf="@+id/btnMinus" />
+        app:layout_constraintTop_toBottomOf="@+id/btnPlus" />
 
     <Button
         android:id="@+id/btnEight"
@@ -136,7 +136,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnEight"
-        app:layout_constraintTop_toBottomOf="@+id/btnSplit" />
+        app:layout_constraintTop_toBottomOf="@+id/btnMultiply" />
 
     <Button
         android:id="@+id/btnPlus"
@@ -147,7 +147,7 @@
         app:layout_constraintEnd_toStartOf="@+id/btnMinus"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@id/guidelineVirtiacal"
-        app:layout_constraintTop_toBottomOf="@id/btnRemoveLast" />
+        app:layout_constraintTop_toBottomOf="@+id/btnClearAll" />
 
     <Button
         android:id="@+id/btnMinus"
@@ -158,7 +158,7 @@
         app:layout_constraintEnd_toStartOf="@+id/btnMultiply"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnPlus"
-        app:layout_constraintTop_toBottomOf="@id/btnRemoveLast" />
+        app:layout_constraintTop_toBottomOf="@+id/btnClearAll" />
 
     <Button
         android:id="@+id/btnMultiply"
@@ -169,7 +169,7 @@
         app:layout_constraintEnd_toStartOf="@+id/btnSplit"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnMinus"
-        app:layout_constraintTop_toBottomOf="@id/btnRemoveLast" />
+        app:layout_constraintTop_toBottomOf="@+id/btnRemoveLast" />
 
     <Button
         android:id="@+id/btnSplit"
@@ -180,14 +180,28 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnMultiply"
-        app:layout_constraintTop_toBottomOf="@id/btnRemoveLast" />
+        app:layout_constraintTop_toBottomOf="@+id/btnRemoveLast" />
 
     <Button
         android:id="@+id/btnRemoveLast"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:text="@string/backspace"
+        app:layout_constraintBottom_toTopOf="@+id/btnMultiply"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btnClearAll"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnClearAll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/clear_all"
+        app:layout_constraintBottom_toTopOf="@+id/btnPlus"
+        app:layout_constraintEnd_toStartOf="@+id/btnRemoveLast"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvOldRows"
         app:layout_constraintStart_toStartOf="@+id/guidelineVirtiacal"
         app:layout_constraintTop_toTopOf="parent" />
 
