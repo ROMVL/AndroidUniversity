@@ -2,8 +2,11 @@ package ua.nure.romanikvladislav.common.notes.presentation.ui.main;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.Observer;
 
 import android.os.Bundle;
+
+import java.util.List;
 
 import ua.nure.romanikvladislav.common.notes.R;
 import ua.nure.romanikvladislav.common.notes.data.model.Note;
@@ -22,6 +25,9 @@ public abstract class MainActivityAbs extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         createViewModel();
         binding.setViewModel(mainViewModelAbs);
+        mainViewModelAbs.getNotes().observe(this, notes -> {
+
+        });
     }
 
     public abstract void createViewModel();

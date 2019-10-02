@@ -1,10 +1,13 @@
 package ua.nure.romanikvladislav.common.notes.data.model;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 @Entity(tableName = "note")
 public class Note implements Serializable {
@@ -17,7 +20,16 @@ public class Note implements Serializable {
     private long dateCreated;
     private String imagePath;
 
-    public Note(String title, String description, int priority, String imagePath) {
+    public Note(String title, String description, int priority) {
+        this.title = title;
+        this.description = description;
+        this.priority = priority;
+        this.dateCreated = new Date().getTime();
+        //TODO insert image path
+        this.imagePath = "";
+    }
+
+    public Note(String title, String description, int priority, @NonNull String imagePath) {
         this.title = title;
         this.description = description;
         this.priority = priority;
@@ -71,6 +83,12 @@ public class Note implements Serializable {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    public String getFormatedDate() {
+        String pattern = "dd.MM.yyyy HH:mm:ss";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+        return simpleDateFormat.format(new Date());
     }
 
     @Override
