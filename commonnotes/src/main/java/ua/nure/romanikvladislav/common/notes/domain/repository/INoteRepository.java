@@ -15,4 +15,6 @@ public interface INoteRepository {
     void deleteNote(Note note);
 
     void editNote(Note note);
+
+    LiveData<Note> fetchNoteById(int id);
 }

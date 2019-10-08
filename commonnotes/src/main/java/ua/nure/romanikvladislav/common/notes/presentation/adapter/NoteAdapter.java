@@ -1,5 +1,6 @@
 package ua.nure.romanikvladislav.common.notes.presentation.adapter;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +23,22 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     private List<Note> filteredNotes;
     private NoteClickListener listener;
 
-    public NoteAdapter(List<Note> notesData, NoteClickListener listener) {
-        this.notesData = notesData;
+    public NoteAdapter(NoteClickListener listener) {
+        this.notesData = new ArrayList<>();
         this.listener = listener;
         this.filteredNotes = new ArrayList<>(notesData);
+    }
+
+    public void setNotesData(List<Note> notes, String filteredQuery) {
+        notesData.clear();
+        notesData.addAll(notes);
+        if (!TextUtils.isEmpty(filteredQuery)) {
+            getFilter().filter(filteredQuery);
+        } else {
+            filteredNotes.clear();
+            filteredNotes.addAll(notes);
+            notifyDataSetChanged();
+        }
     }
 
     @NonNull
