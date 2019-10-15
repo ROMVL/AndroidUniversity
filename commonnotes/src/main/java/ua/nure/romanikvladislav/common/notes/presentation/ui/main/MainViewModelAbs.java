@@ -30,6 +30,7 @@ public abstract class MainViewModelAbs extends ViewModel {
     }
 
     public LiveData<List<Note>> getNotes() {
+        notes = noteRepository.fetchAllNotes();
         return notes;
     }
 
