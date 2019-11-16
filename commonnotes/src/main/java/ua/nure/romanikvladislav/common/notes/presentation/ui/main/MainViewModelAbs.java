@@ -16,25 +16,18 @@ public abstract class MainViewModelAbs extends ViewModel {
     protected static final String TAG = MainViewModelAbs.class.getSimpleName();
 
     private INoteRepository noteRepository;
-    private LiveData<List<Note>> notes;
-    private MediatorLiveData<List<Note>> filteredNotes;
 
     public MainViewModelAbs(INoteRepository noteRepository) {
         this.noteRepository = noteRepository;
-        initNotes();
-    }
-
-    public void initNotes() {
-        notes = noteRepository.fetchAllNotes();
-        Log.d(TAG, notes.getValue().toString());
     }
 
     public LiveData<List<Note>> getNotes() {
-        notes = noteRepository.fetchAllNotes();
+        LiveData<List<Note>> notes = noteRepository.fetchAllNotes();
         return notes;
     }
 
-    public MediatorLiveData<List<Note>> getFilteredNotes() {
-        return filteredNotes;
+    public void notifyNotes() {
+        noteRepository.notifyNotes();
     }
+
 }

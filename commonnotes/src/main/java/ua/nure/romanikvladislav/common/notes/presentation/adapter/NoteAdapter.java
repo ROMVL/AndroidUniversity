@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import ua.nure.romanikvladislav.common.notes.R;
 import ua.nure.romanikvladislav.common.notes.data.model.Note;
 import ua.nure.romanikvladislav.common.notes.databinding.ItemNoteBinding;
 
@@ -32,6 +33,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     public void setNotesData(List<Note> notes, String filteredQuery) {
         notesData.clear();
         notesData.addAll(notes);
+        //notifyDataSetChanged();
         if (!TextUtils.isEmpty(filteredQuery)) {
             getFilter().filter(filteredQuery);
         } else {
@@ -45,7 +47,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     @Override
     public NoteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new NoteViewHolder(ItemNoteBinding.inflate(inflater));
+        return new NoteViewHolder(ItemNoteBinding.inflate(inflater, parent, false));
     }
 
     @Override
@@ -85,10 +87,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
 
         void onBind(Note note) {
             noteBinding.setNote(note);
-            noteBinding.getRoot().setOnClickListener(view -> {
-                if (listener != null) {
-                    listener.onClickNote(note);
-                }
+            noteBinding.getRoot().setOnCreateContextMenuListener((menu, v, menuInfo) -> {
+                menu.add(0, R.id.action_edit, 1, R.string.edit);
+                menu.add(0, R.id.action_remove, 2, R.string.remove);
+
+                //onLongPress.invoke(getLayoutPosition(), note);
             });
         }
     }

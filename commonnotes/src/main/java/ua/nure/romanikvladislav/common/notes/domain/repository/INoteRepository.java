@@ -17,4 +17,6 @@ public interface INoteRepository {
     void editNote(Note note);
 
     LiveData<Note> fetchNoteById(int id);
+
+    void notifyNotes();
 }

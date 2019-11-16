@@ -1,4 +1,24 @@
 <resources>
     <string name="app_name">commonnotes</string>
     <string name="search_note">Search note</string>
+
+    <string name="edit">Edit</string>
+    <string name="remove">Remove</string>
+    <string name="add">Add</string>
+    <string name="search">Search</string>
+    <string name="priority">Priority</string>
+    <string name="priority_low">Low</string>
+    <string name="priority_medium">Medium</string>
+    <string name="priority_high">High</string>
+    <string name="priority_all">All</string>
+
+    <string name="hint_name">Name</string>
+    <string name="hint_note">Note</string>
+    <string name="set_priority">Set Priority</string>
+    <string name="attach_image">Attach Image</string>
+    <string name="save_note">Save Note</string>
+
+    <string name="title_add_note">Add Note</string>
+    <string name="title_edit_note">Edit Note</string>
+
 </resources>

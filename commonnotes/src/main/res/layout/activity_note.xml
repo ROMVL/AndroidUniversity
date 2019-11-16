@@ -1,19 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="note"
+            type="ua.nure.romanikvladislav.common.notes.data.model.Note" />
 
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".presentation.ui.note.NoteActivityAbs">
 
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="w,1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_camera" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/imageView" >
+
+            <RadioButton
+                android:id="@+id/rbLow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/priority_low" />
+
+            <RadioButton
+                android:id="@+id/rbMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/priority_medium" />
+
+            <RadioButton
+                android:id="@+id/rbHigh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/priority_high" />
+        </RadioGroup>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

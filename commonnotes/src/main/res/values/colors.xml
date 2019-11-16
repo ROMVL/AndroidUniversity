@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryDark">#FFFFFF</color>
+    <color name="colorSecondary">#ffffff</color>
+    <color name="colorAccent">#2E2E2E</color>
+    <color name="colorTextPrimary">#2E2E2E</color>
+    <color name="colorTextSecondary">#ffffff</color>
+
+    <color name="priorityHigh">#FF8A65</color>
+    <color name="priorityMedium">#FFD54F</color>
+    <color name="priorityLow">@color/colorPrimary</color>
+
+</resources>

@@ -91,6 +91,10 @@ public class Note implements Serializable {
         return simpleDateFormat.format(new Date());
     }
 
+    public String getFormattedProiority() {
+        return "Priority: " + priority;
+    }
+
     @Override
     public String toString() {
         return "Note{" +
