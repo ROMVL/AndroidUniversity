@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit">Редагувати</string>
+    <string name="remove">Видалити</string>
+    <string name="add">Додати</string>
+    <string name="search">Пошук</string>
+    <string name="priority">Пріорітет</string>
+    <string name="priority_low">Низький</string>
+    <string name="priority_medium">Середній</string>
+    <string name="priority_high">Високий</string>
+    <string name="priority_all">Усі</string>
+
+    <string name="hint_name">Назва</string>
+    <string name="hint_note">Нотатка</string>
+    <string name="set_priority">Встановити Пріорітет</string>
+    <string name="attach_image">Додати Зображення</string>
+    <string name="save_note">Зберегти</string>
+
+    <string name="title_add_note">Додати Нотатку</string>
+    <string name="title_edit_note">Редагувати Нотатку</string>
+</resources>

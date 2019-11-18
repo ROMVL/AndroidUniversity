@@ -34,7 +34,7 @@ public class App extends Application {
                 return noteLiveData;
             }
         }
-        noteLiveData.setValue(null);
+        noteLiveData.setValue(Note.emptyNote());
         return noteLiveData;
     }
 

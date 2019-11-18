@@ -85,13 +85,13 @@ public class Note implements Serializable {
         this.imagePath = imagePath;
     }
 
-    public String getFormatedDate() {
+    public String getFormattedDate() {
         String pattern = "dd.MM.yyyy HH:mm:ss";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, Locale.getDefault());
         return simpleDateFormat.format(new Date());
     }
 
-    public String getFormattedProiority() {
+    public String getFormattedPriority() {
         return "Priority: " + priority;
     }
 
@@ -105,5 +105,9 @@ public class Note implements Serializable {
                 ", dateCreated=" + dateCreated +
                 ", imagePath='" + imagePath + '\'' +
                 '}';
+    }
+
+    public static Note emptyNote() {
+        return new Note("", "", 0, "");
     }
 }

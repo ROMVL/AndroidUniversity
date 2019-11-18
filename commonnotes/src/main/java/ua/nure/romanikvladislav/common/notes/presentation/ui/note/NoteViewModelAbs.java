@@ -6,12 +6,12 @@ import androidx.lifecycle.ViewModel;
 import ua.nure.romanikvladislav.common.notes.data.model.Note;
 import ua.nure.romanikvladislav.common.notes.domain.repository.INoteRepository;
 
-public abstract class NoteViewModel extends ViewModel {
+public abstract class NoteViewModelAbs extends ViewModel {
 
     private INoteRepository noteRepository;
     private LiveData<Note> noteLiveData;
 
-    public NoteViewModel(INoteRepository noteRepository, int noteId) {
+    public NoteViewModelAbs(INoteRepository noteRepository, int noteId) {
         this.noteRepository = noteRepository;
         initData(noteId);
     }
