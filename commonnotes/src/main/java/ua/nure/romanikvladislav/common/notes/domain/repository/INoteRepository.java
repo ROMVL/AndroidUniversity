@@ -18,5 +18,4 @@ public interface INoteRepository {
 
     LiveData<Note> fetchNoteById(int id);
 
-    void notifyNotes();
 }

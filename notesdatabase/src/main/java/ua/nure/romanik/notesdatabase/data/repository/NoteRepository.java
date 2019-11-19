@@ -28,12 +28,12 @@ public class NoteRepository implements INoteRepository {
 
     @Override
     public void deleteNote(Note note) {
-        new Thread(() -> noteDao.deleteNote(note));
+        new Thread(() -> noteDao.deleteNote(note)).start();
     }
 
     @Override
     public void editNote(Note note) {
-        new Thread(() -> noteDao.updateNote(note));
+        new Thread(() -> noteDao.updateNote(note)).start();
     }
 
     @Override
@@ -41,8 +41,4 @@ public class NoteRepository implements INoteRepository {
         return noteDao.getNoteById(id);
     }
 
-    @Override
-    public void notifyNotes() {
-
-    }
 }

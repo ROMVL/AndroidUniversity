@@ -35,9 +35,4 @@ public class NoteRepository implements INoteRepository {
         return App.getNoteLiveData(id);
     }
 
-    @Override
-    public void notifyNotes() {
-        App.notifyNotes();
-    }
-
 }
