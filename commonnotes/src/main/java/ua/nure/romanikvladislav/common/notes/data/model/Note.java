@@ -14,6 +14,7 @@ import java.util.Locale;
 public class Note implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
+    private int rowId;
     private int id;
     private String title;
     private String description;
@@ -40,6 +41,14 @@ public class Note implements Serializable {
         this.priority = priority;
         this.dateCreated = new Date().getTime();
         this.imagePath = imagePath;
+    }
+
+    public int getRowId() {
+        return rowId;
+    }
+
+    public void setRowId(int rowId) {
+        this.rowId = rowId;
     }
 
     public void setId(int id) {

@@ -10,7 +10,7 @@ public class MainActivity extends MainActivityAbs {
 
     @Override
     public void onClickEditNote(Note note) {
-        startActivity(NoteActivity.newIntent(this, note.getId()));
+        startActivity(NoteActivity.newIntent(this, note.getRowId()));
     }
 
     @Override

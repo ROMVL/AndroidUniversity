@@ -47,13 +47,14 @@ public abstract class NoteActivityAbs extends AppCompatActivity {
             }
         });
         noteViewModelAbs.getNote().observe(this, note -> {
-            Log.d("NoteActivityAbs", "observe " + note.toString());
-            if (!note.getImagePath().isEmpty()) {
-                setupImage(Uri.parse(note.getImagePath()));
-            } else {
-                binding.imageView.setImageResource(R.drawable.ic_camera);
+            if (note != null) {
+                if (!note.getImagePath().isEmpty()) {
+                    setupImage(Uri.parse(note.getImagePath()));
+                } else {
+                    binding.imageView.setImageResource(R.drawable.ic_camera);
+                }
+                initNoteView(note);
             }
-            initNoteView(note);
         });
         noteViewModelAbs.getBackEvent().observe(this, backEvent -> {
             if (backEvent) this.onBackPressed();

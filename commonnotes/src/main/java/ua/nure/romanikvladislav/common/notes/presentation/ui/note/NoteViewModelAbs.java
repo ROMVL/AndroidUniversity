@@ -1,7 +1,5 @@
 package ua.nure.romanikvladislav.common.notes.presentation.ui.note;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -21,7 +19,13 @@ public abstract class NoteViewModelAbs extends ViewModel {
     }
 
     private void initData(int noteId) {
-        note = noteRepository.fetchNoteById(noteId);
+        if (noteId == -1) {
+            MutableLiveData<Note> liveDataNote = new MutableLiveData<>();
+            liveDataNote.setValue(Note.emptyNote());
+            note = liveDataNote;
+        } else {
+            note = noteRepository.fetchNoteById(noteId);
+        }
     }
 
     public LiveData<Note> getNote() {
@@ -32,10 +36,11 @@ public abstract class NoteViewModelAbs extends ViewModel {
 
     public void saveNote(int priority, String name, String description) {
         Note currentNote = note.getValue();
+        if (currentNote == null) currentNote = Note.emptyNote();
         currentNote.setPriority(priority);
         currentNote.setTitle(name);
         currentNote.setDescription(description);
-        if (currentNote.getId() == -1) {
+        if (currentNote.getId() == -1 && currentNote.getRowId() == 0) {
             noteRepository.saveNote(currentNote);
         } else {
             noteRepository.editNote(currentNote);
