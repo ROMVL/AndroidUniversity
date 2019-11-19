@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModelProvider;
 
 import ua.nure.romanikvladislav.common.notes.domain.repository.INoteRepository;
 
-public class ModelFactory extends ViewModelProvider.NewInstanceFactory {
+public class MainViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
     private final INoteRepository repository;
 
-    public ModelFactory(INoteRepository repository) {
+    public MainViewModelFactory(INoteRepository repository) {
         super();
         this.repository = repository;
     }

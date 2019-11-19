@@ -1,9 +1,6 @@
 package ua.nure.romanikvladislav.common.notes.presentation.ui.main;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
@@ -22,12 +19,10 @@ public abstract class MainViewModelAbs extends ViewModel {
     }
 
     public LiveData<List<Note>> getNotes() {
-        LiveData<List<Note>> notes = noteRepository.fetchAllNotes();
-        return notes;
+        return noteRepository.fetchAllNotes();
     }
 
-    public void notifyNotes() {
-        noteRepository.notifyNotes();
+    public void removeNote(Note note) {
+        noteRepository.deleteNote(note);
     }
-
 }

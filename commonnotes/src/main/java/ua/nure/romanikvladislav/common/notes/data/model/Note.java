@@ -108,6 +108,8 @@ public class Note implements Serializable {
     }
 
     public static Note emptyNote() {
-        return new Note("", "", 0, "");
+        Note emptyNote = new Note("", "", 0, "");
+        emptyNote.setId(-1);
+        return emptyNote;
     }
 }

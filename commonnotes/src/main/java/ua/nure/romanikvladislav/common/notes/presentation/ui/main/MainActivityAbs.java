@@ -24,12 +24,22 @@ import ua.nure.romanikvladislav.common.notes.presentation.adapter.NoteAdapter;
 
 public abstract class MainActivityAbs extends AppCompatActivity implements NoteAdapter.NoteClickListener {
 
+    public static final String ACTION_PRIORITY_HIGH = "action_priority_high";
+    public static final String ACTION_PRIORITY_MEDIUM = "action_priority_medium";
+    public static final String ACTION_PRIORITY_LOW = "action_priority_low";
+    public static final String ACTION_PRIORITY_ALL = "action_priority_all";
+
     private MainViewModelAbs mainViewModelAbs;
     private ActivityMainBinding binding;
     private NoteAdapter adapter;
     private String query = null;
 
-    public abstract void onClickNote(Note note);
+    public abstract void onClickAddNote();
+
+    @Override
+    public void onClickRemoveNote(Note note) {
+        mainViewModelAbs.removeNote(note);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +47,11 @@ public abstract class MainActivityAbs extends AppCompatActivity implements NoteA
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mainViewModelAbs = createViewModel();
         binding.setViewModel(mainViewModelAbs);
+        binding.floatingActionButton.setOnClickListener(listener -> onClickAddNote());
         setupRecycler();
         setupLiveDataObservables();
         Toolbar toolbar = findViewById(R.id.notes_toolbar);
         setSupportActionBar(toolbar);
-        //mainViewModelAbs.notifyNotes();
     }
 
     @Override
@@ -49,7 +59,21 @@ public abstract class MainActivityAbs extends AppCompatActivity implements NoteA
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        //searchView.setOnQueryTextListener(searchListener);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String querySubmitted) {
+                query = querySubmitted;
+                adapter.getFilter().filter(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                query = newText;
+                adapter.getFilter().filter(query);
+                return true;
+            }
+        });
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -58,34 +82,28 @@ public abstract class MainActivityAbs extends AppCompatActivity implements NoteA
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_priority_high) {
             item.setChecked(true);
+            query = ACTION_PRIORITY_HIGH;
+            adapter.getFilter().filter(query);
             return true;
         } else if (item.getItemId() == R.id.action_priority_medium) {
             item.setChecked(true);
+            query = ACTION_PRIORITY_MEDIUM;
+            adapter.getFilter().filter(query);
             return true;
         } else if (item.getItemId() == R.id.action_priority_low) {
             item.setChecked(true);
+            query = ACTION_PRIORITY_LOW;
+            adapter.getFilter().filter(query);
             return true;
         } else if (item.getItemId() == R.id.action_priority_all) {
             item.setChecked(true);
+            query = ACTION_PRIORITY_ALL;
+            adapter.getFilter().filter(query);
             return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
     }
-
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.action_edit) {
-            //item.setChecked(true);
-            return true;
-        } else if (item.getItemId() == R.id.action_remove) {
-            //item.setChecked(true);
-            return true;
-        } else {
-            return super.onContextItemSelected(item);
-        }
-    }
-
 
     protected void setupRecycler() {
         adapter = new NoteAdapter(this);
@@ -110,13 +128,5 @@ public abstract class MainActivityAbs extends AppCompatActivity implements NoteA
     }
 
     public abstract MainViewModelAbs createViewModel();
-
-    public ActivityMainBinding getBinding() {
-        return binding;
-    }
-
-    public MainViewModelAbs getMainViewModel() {
-        return mainViewModelAbs;
-    }
 
 }

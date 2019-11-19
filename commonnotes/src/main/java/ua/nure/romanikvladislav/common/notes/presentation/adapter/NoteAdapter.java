@@ -2,6 +2,7 @@ package ua.nure.romanikvladislav.common.notes.presentation.adapter;
 
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
@@ -17,6 +18,7 @@ import java.util.List;
 import ua.nure.romanikvladislav.common.notes.R;
 import ua.nure.romanikvladislav.common.notes.data.model.Note;
 import ua.nure.romanikvladislav.common.notes.databinding.ItemNoteBinding;
+import ua.nure.romanikvladislav.common.notes.presentation.ui.main.MainActivityAbs;
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder> implements Filterable {
 
@@ -65,13 +67,56 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence charSequence) {
-                return null;
+                String query = charSequence.toString();
+                FilterResults filterResults = new FilterResults();
+                filteredNotes.clear();
+                if (query.isEmpty()) {
+                    filteredNotes.addAll(notesData);
+                    filterResults.values = filteredNotes;
+                    return filterResults;
+                }
+                switch (query) {
+                    case MainActivityAbs.ACTION_PRIORITY_ALL:
+                        filteredNotes.addAll(notesData);
+                        filterResults.values = filteredNotes;
+                        break;
+                    case MainActivityAbs.ACTION_PRIORITY_HIGH:
+                        for (Note note : notesData) {
+                            if (note.getPriority() == 2) {
+                                filteredNotes.add(note);
+                            }
+                        }
+                        break;
+                    case MainActivityAbs.ACTION_PRIORITY_MEDIUM:
+                        for (Note note : notesData) {
+                            if (note.getPriority() == 1) {
+                                filteredNotes.add(note);
+                            }
+                        }
+                        break;
+                    case MainActivityAbs.ACTION_PRIORITY_LOW:
+                        for (Note note : notesData) {
+                            if (note.getPriority() == 0) {
+                                filteredNotes.add(note);
+                            }
+                        }
+                        break;
+                    default:
+                        for (Note note : notesData) {
+                            if (note.getTitle().toLowerCase().contains(query.toLowerCase()) ||
+                                    note.getDescription().toLowerCase().contains(query.toLowerCase())) {
+                                filteredNotes.add(note);
+                            }
+                        }
+                        break;
+                }
+                filterResults.values = filteredNotes;
+                return filterResults;
             }
 
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                filteredNotes.clear();
-                filteredNotes.addAll((ArrayList<? extends Note>) filterResults.values);
+                notifyDataSetChanged();
             }
         };
     }
@@ -88,15 +133,24 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         void onBind(Note note) {
             noteBinding.setNote(note);
             noteBinding.getRoot().setOnCreateContextMenuListener((menu, v, menuInfo) -> {
-                menu.add(0, R.id.action_edit, 1, R.string.edit);
-                menu.add(0, R.id.action_remove, 2, R.string.remove);
+                MenuItem edit = menu.add(0, R.id.action_edit, 1, R.string.edit);
+                MenuItem remove = menu.add(0, R.id.action_remove, 2, R.string.remove);
 
-                //onLongPress.invoke(getLayoutPosition(), note);
+                edit.setOnMenuItemClickListener(item -> {
+                    listener.onClickEditNote(note);
+                    return true;
+                });
+
+                remove.setOnMenuItemClickListener(item -> {
+                    listener.onClickRemoveNote(note);
+                    return true;
+                });
             });
         }
     }
 
     public interface NoteClickListener {
-        void onClickNote(Note note);
+        void onClickEditNote(Note note);
+        void onClickRemoveNote(Note note);
     }
 }

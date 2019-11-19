@@ -5,10 +5,8 @@
 
     <data>
         <variable
-            name="note"
-            type="ua.nure.romanikvladislav.common.notes.data.model.Note" />
-
-
+            name="viewModel"
+            type="ua.nure.romanikvladislav.common.notes.presentation.ui.note.NoteViewModelAbs" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -40,18 +38,24 @@
                 android:id="@+id/rbLow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="@{() -> viewModel.note.setPriority(0)}"
+                android:checked="@{viewModel.note.priority == 0 ? true : false}"
                 android:text="@string/priority_low" />
 
             <RadioButton
                 android:id="@+id/rbMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="@{() -> viewModel.note.setPriority(1)}"
+                android:checked="@{viewModel.note.priority == 1 ? true : false}"
                 android:text="@string/priority_medium" />
 
             <RadioButton
                 android:id="@+id/rbHigh"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="@{() -> viewModel.note.setPriority(2)}"
+                android:checked="@{viewModel.note.priority == 2 ? true : false}"
                 android:text="@string/priority_high" />
         </RadioGroup>
 
@@ -68,10 +72,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/radioGroup">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/name"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:text="@{viewModel.note.title}"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -87,16 +92,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/nameLayout">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/note"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:text="@{viewModel.note.description}"
                 android:gravity="top" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/saveButton"
-            style="@style/Widget.MaterialComponents.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -106,7 +111,6 @@
             android:background="@color/colorAccent"
             android:text="@string/save_note"
             android:textStyle="bold"
-            app:cornerRadius="12dp"
             app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,9 +9,10 @@ import ua.nure.romanikvladislav.common.notes.domain.repository.INoteRepository;
 import ua.nure.romanik.notes.App;
 
 public class NoteRepository implements INoteRepository {
+
     @Override
     public void saveNote(Note note) {
-
+        App.saveNote(note);
     }
 
     @Override
@@ -21,12 +22,12 @@ public class NoteRepository implements INoteRepository {
 
     @Override
     public void deleteNote(Note note) {
-
+        App.deleteNote(note);
     }
 
     @Override
     public void editNote(Note note) {
-
+        App.editNote(note);
     }
 
     @Override
@@ -38,6 +39,5 @@ public class NoteRepository implements INoteRepository {
     public void notifyNotes() {
         App.notifyNotes();
     }
-
 
 }
