@@ -1,8 +1,7 @@
-package ua.nure.romanik.notes.presentation.ui.main;
+package ua.nure.romanik.notesdatabase.presentation.ui.main;
 
-
-import ua.nure.romanik.notes.App;
-import ua.nure.romanik.notes.presentation.ui.note.NoteActivity;
+import ua.nure.romanik.notesdatabase.App;
+import ua.nure.romanik.notesdatabase.presentation.ui.note.NoteActivity;
 import ua.nure.romanikvladislav.common.notes.data.model.Note;
 import ua.nure.romanikvladislav.common.notes.presentation.ui.main.MainActivityAbs;
 import ua.nure.romanikvladislav.common.notes.presentation.ui.main.MainViewModelAbs;

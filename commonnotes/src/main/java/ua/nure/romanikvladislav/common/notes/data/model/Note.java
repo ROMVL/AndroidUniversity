@@ -2,6 +2,7 @@ package ua.nure.romanikvladislav.common.notes.data.model;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
@@ -20,6 +21,9 @@ public class Note implements Serializable {
     private long dateCreated;
     private String imagePath;
 
+    public Note() { }
+
+    @Ignore
     public Note(String title, String description, int priority) {
         this.title = title;
         this.description = description;
@@ -29,6 +33,7 @@ public class Note implements Serializable {
         this.imagePath = "";
     }
 
+    @Ignore
     public Note(String title, String description, int priority, @NonNull String imagePath) {
         this.title = title;
         this.description = description;
@@ -69,7 +74,13 @@ public class Note implements Serializable {
         this.priority = priority;
     }
 
-    public Date getDateCreated() {
+    public void setDateCreated(long dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public long getDateCreated() { return dateCreated; }
+
+    public Date getDateCreatedF() {
         return new Date(dateCreated);
     }
 

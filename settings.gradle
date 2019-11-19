@@ -1,2 +1,2 @@
-include ':app', ':colordisplay', ':calculator', ':commonnotes', ':notes'
+include ':app', ':colordisplay', ':calculator', ':commonnotes', ':notes', ':notesdatabase'
 rootProject.name='Practical Lesson 1'
