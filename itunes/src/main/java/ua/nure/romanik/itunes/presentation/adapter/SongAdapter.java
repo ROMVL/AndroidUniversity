@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ua.nure.romanik.itunes.data.model.Song;
@@ -16,9 +17,14 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
     private List<Song> songs;
     private OnClickSongListener listener;
 
-    public SongAdapter(List<Song> songs, OnClickSongListener listener) {
-        this.songs = songs;
+    public SongAdapter(OnClickSongListener listener) {
+        this.songs = new ArrayList<>();
         this.listener = listener;
+    }
+
+    public void setSongs(List<Song> songs) {
+        this.songs = songs;
+        notifyDataSetChanged();
     }
 
     @NonNull
