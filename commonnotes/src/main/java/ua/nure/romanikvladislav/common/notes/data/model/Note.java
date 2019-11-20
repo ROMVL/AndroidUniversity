@@ -112,7 +112,11 @@ public class Note implements Serializable {
     }
 
     public String getFormattedPriority() {
-        return "Priority: " + priority;
+        String priorityString;
+        if (priority == 0) priorityString = "Low";
+        else if (priority == 1) priorityString = "Medium";
+        else priorityString = "High";
+        return "Priority: " + priorityString;
     }
 
     @Override

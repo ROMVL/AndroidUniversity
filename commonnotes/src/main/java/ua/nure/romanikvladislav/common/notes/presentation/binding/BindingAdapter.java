@@ -11,15 +11,17 @@ public class BindingAdapter {
 
     @androidx.databinding.BindingAdapter("app:setImageByPath")
     public static void setImageByPath(ImageView imageView, String path) {
-        Uri imageUri = Uri.parse(path);
-        if (imageUri.equals(Uri.EMPTY)) {
-            imageView.setImageResource(R.drawable.ic_camera);
-            return;
+        if (path != null) {
+            Uri imageUri = Uri.parse(path);
+            if (imageUri.equals(Uri.EMPTY)) {
+                imageView.setImageResource(R.drawable.ic_camera);
+                return;
+            }
+            Glide.with(imageView.getContext())
+                    .load(imageUri)
+                    .error(R.drawable.ic_camera)
+                    .into(imageView);
         }
-        Glide.with(imageView.getContext())
-                .load(imageUri)
-                .error(R.drawable.ic_camera)
-                .into(imageView);
     }
 
 }

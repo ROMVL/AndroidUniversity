@@ -32,14 +32,10 @@ public abstract class NoteViewModelAbs extends ViewModel {
         return note;
     }
 
-    public LiveData<Boolean> getBackEvent() { return backEvent; }
+    LiveData<Boolean> getBackEvent() { return backEvent; }
 
-    public void saveNote(int priority, String name, String description) {
-        Note currentNote = note.getValue();
+    public void saveNote(Note currentNote) {
         if (currentNote == null) currentNote = Note.emptyNote();
-        currentNote.setPriority(priority);
-        currentNote.setTitle(name);
-        currentNote.setDescription(description);
         if (currentNote.getId() == -1 && currentNote.getRowId() == 0) {
             noteRepository.saveNote(currentNote);
         } else {
@@ -49,6 +45,9 @@ public abstract class NoteViewModelAbs extends ViewModel {
     }
 
     void setImage(String imageUri) {
-        note.getValue().setImagePath(imageUri);
+        Note currentNote = note.getValue();
+        if (currentNote != null) {
+            currentNote.setImagePath(imageUri);
+        }
     }
 }

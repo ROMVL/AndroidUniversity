@@ -35,7 +35,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     public void setNotesData(List<Note> notes, String filteredQuery) {
         notesData.clear();
         notesData.addAll(notes);
-        //notifyDataSetChanged();
         if (!TextUtils.isEmpty(filteredQuery)) {
             getFilter().filter(filteredQuery);
         } else {

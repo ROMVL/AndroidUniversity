@@ -50,8 +50,8 @@ public abstract class MainActivityAbs extends AppCompatActivity implements NoteA
         binding.floatingActionButton.setOnClickListener(listener -> onClickAddNote());
         setupRecycler();
         setupLiveDataObservables();
-        Toolbar toolbar = findViewById(R.id.notes_toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = findViewById(R.id.notes_toolbar);
+//        setSupportActionBar(toolbar);
     }
 
     @Override
@@ -118,7 +118,6 @@ public abstract class MainActivityAbs extends AppCompatActivity implements NoteA
     protected void setupLiveDataObservables() {
         mainViewModelAbs.getNotes().observe(this, notes -> {
             adapter.setNotesData(notes, query);
-            Log.d("MainActivityAbs", notes.toString());
         });
     }
 
