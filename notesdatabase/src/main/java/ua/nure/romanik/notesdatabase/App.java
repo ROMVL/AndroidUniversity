@@ -10,19 +10,16 @@ import ua.nure.romanikvladislav.common.notes.domain.repository.INoteRepository;
 
 public class App extends Application {
 
-    private static NoteDatabase noteDatabase;
     private static INoteRepository noteRepository;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        noteDatabase = Room
-                .databaseBuilder(this, NoteDatabase.class, "notedatabase")
+        NoteDatabase noteDatabase = Room
+                .databaseBuilder(this, NoteDatabase.class, NoteDatabase.DATABASE_NAME)
                 .build();
         noteRepository = new NoteRepository(noteDatabase.noteDao());
     }
-
-    public static NoteDatabase getNoteDatabase() { return noteDatabase; }
 
     public static INoteRepository getNoteRepository() { return noteRepository; }
 

@@ -120,11 +120,6 @@ public abstract class MainActivityAbs extends AppCompatActivity implements NoteA
         });
     }
 
-    @Override
-    public void onContextMenuClosed(@NonNull Menu menu) {
-        super.onContextMenuClosed(menu);
-    }
-
     public abstract MainViewModelAbs createViewModel();
 
 }
