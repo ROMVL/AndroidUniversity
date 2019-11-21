@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="viewModel"
+            type="ua.nure.romanik.itunes.presentation.ui.main.MainViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,6 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/progress_bar"
+                android:text="@{viewModel.currentSong.title}"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:layout_toStartOf="@+id/control_button_ll"
@@ -53,7 +56,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:max="100"
+                android:progress="@{viewModel.currentPositionLiveData}"
+                android:max="@{viewModel.durationLiveData}"
                 tools:progress="40" />
 
             <LinearLayout
@@ -66,28 +70,28 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <TextView
+                <ImageView
                     android:id="@+id/previous_song_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:drawableStart="@drawable/ic_previous"
+                    android:onClick="@{() -> viewModel.playPrev()}"
+                    android:src="@drawable/ic_previous"
                     android:padding="12dp" />
 
-                <TextView
+                <ImageView
                     android:id="@+id/play_song_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:drawableStart="@drawable/ic_pause"
+                    android:onClick="@{() -> viewModel.playOrPause()}"
+                    android:src="@drawable/ic_pause"
                     android:padding="12dp" />
 
-                <TextView
+                <ImageView
                     android:id="@+id/next_song_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:drawableStart="@drawable/ic_next"
+                    android:onClick="@{() -> viewModel.playNext()}"
+                    android:src="@drawable/ic_next"
                     android:padding="12dp" />
 
             </LinearLayout>
