@@ -22,7 +22,7 @@ public abstract class MainViewModelAbs extends ViewModel {
         return noteRepository.fetchAllNotes();
     }
 
-    public void removeNote(Note note) {
+    void removeNote(Note note) {
         noteRepository.deleteNote(note);
     }
 }

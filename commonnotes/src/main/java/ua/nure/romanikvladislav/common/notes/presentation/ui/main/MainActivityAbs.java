@@ -47,11 +47,10 @@ public abstract class MainActivityAbs extends AppCompatActivity implements NoteA
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mainViewModelAbs = createViewModel();
         binding.setViewModel(mainViewModelAbs);
+        binding.setLifecycleOwner(this);
         binding.floatingActionButton.setOnClickListener(listener -> onClickAddNote());
         setupRecycler();
         setupLiveDataObservables();
-//        Toolbar toolbar = findViewById(R.id.notes_toolbar);
-//        setSupportActionBar(toolbar);
     }
 
     @Override
