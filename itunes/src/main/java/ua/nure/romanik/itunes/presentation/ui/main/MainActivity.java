@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
@@ -87,6 +86,10 @@ public class MainActivity extends AppCompatActivity implements SongAdapter.OnCli
         mainViewModel.getUserEvent().observe(this, userEvent -> {
             if (userEvent.equals(UserEvent.PLAY)) {
                 activityMainBinding.playButton.setImageResource(R.drawable.ic_play_arrow);
+            } else if (userEvent.equals(UserEvent.REPEAT_OFF)) {
+                activityMainBinding.repeatButton.setImageResource(R.drawable.ic_repeat_off);
+            } else if (userEvent.equals(UserEvent.REPEAT_ON)) {
+                activityMainBinding.repeatButton.setImageResource(R.drawable.ic_repeat_on);
             } else {
                 activityMainBinding.playButton.setImageResource(R.drawable.ic_pause);
             }

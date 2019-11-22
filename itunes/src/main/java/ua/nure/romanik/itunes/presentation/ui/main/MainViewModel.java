@@ -44,6 +44,7 @@ public class MainViewModel extends AndroidViewModel {
     private NotificationManagerCompat notificationManagerCompat;
 
     private int currentIndexSong;
+    private boolean isRepeatMode = false;
 
     MainViewModel(@NonNull Application application) {
         super(application);
@@ -108,7 +109,13 @@ public class MainViewModel extends AndroidViewModel {
             mediaPlayer.setDataSource(getApplication(), trackUri);
             mediaPlayer.prepare();
             mediaPlayer.start();
-            mediaPlayer.setOnCompletionListener(mPlayer -> playNext());
+            mediaPlayer.setOnCompletionListener(mPlayer -> {
+                if (isRepeatMode) {
+                    startSong(song);
+                } else {
+                    playNext();
+                }
+            });
             userEventLiveData.setValue(UserEvent.PAUSE);
             currentSongLiveData.setValue(song);
             showNotification(song, R.drawable.ic_pause_black_24dp);
@@ -148,6 +155,19 @@ public class MainViewModel extends AndroidViewModel {
         }
     }
 
+    public void shufflePlayList() {
+
+    }
+
+    public void repeatMelody() {
+        if (isRepeatMode) {
+            userEventLiveData.postValue(UserEvent.REPEAT_OFF);
+        } else {
+            userEventLiveData.postValue(UserEvent.REPEAT_ON);
+        }
+        isRepeatMode = !isRepeatMode;
+    }
+
     private void showNotification(@Nullable Song song, @DrawableRes int resourcePlayOrPauseButton) {
         if (song == null) return;
         RemoteViews collapsedView = new RemoteViews(getApplication().getPackageName(),
@@ -155,7 +175,7 @@ public class MainViewModel extends AndroidViewModel {
 
         collapsedView.setImageViewResource(R.id.ivIconApp, R.drawable.ic_launcher_foreground);
         collapsedView.setTextViewText(R.id.tvAppName, getApplication().getString(R.string.app_name));
-        collapsedView.setTextViewText(R.id.tvTitle, song.getTitle());
+        collapsedView.setTextViewText(R.id.tvTitle, String.format("%s - %s", song.getTitle(), song.getArtist()));
         collapsedView.setImageViewResource(R.id.ivPlay, resourcePlayOrPauseButton);
         collapsedView.setImageViewResource(R.id.ivNext, R.drawable.ic_skip_next_black_24dp);
         collapsedView.setImageViewResource(R.id.ivPrev, R.drawable.ic_skip_previous_black_24dp);
