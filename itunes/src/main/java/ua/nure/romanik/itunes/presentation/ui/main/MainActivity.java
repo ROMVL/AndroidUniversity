@@ -6,12 +6,14 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,7 +28,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import ua.nure.romanik.itunes.R;
 import ua.nure.romanik.itunes.data.model.Song;
 import ua.nure.romanik.itunes.databinding.ActivityMainBinding;
-import ua.nure.romanik.itunes.presentation.NotificationReceiver;
 import ua.nure.romanik.itunes.presentation.adapter.SongAdapter;
 
 import static ua.nure.romanik.itunes.App.CHANNEL_ID;
@@ -35,18 +36,16 @@ public class MainActivity extends AppCompatActivity implements SongAdapter.OnCli
 
     private static final String[] permissions = { Manifest.permission.READ_EXTERNAL_STORAGE };
     private static final int permissionRequestCode = 607590;
+    private static final String MUSIC_PLAY_OR_PAUSE = "music_action_play_or_pause";
+    private static final String MUSIC_NEXT = "music_action_next";
+    private static final String MUSIC_PREV = "music_action_prev";
 
     private ActivityMainBinding activityMainBinding;
     private SongAdapter songAdapter;
     private MainViewModel mainViewModel;
     private NotificationManagerCompat notificationManagerCompat;
 
-    private BroadcastReceiver musicNotificationReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-        }
-    };
+    private BroadcastReceiver musicBroadCastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +64,20 @@ public class MainActivity extends AppCompatActivity implements SongAdapter.OnCli
         initObservers();
         if (!isPermissionGranted(permissions[0])) requestPermissions(permissions, permissionRequestCode);
         else mainViewModel.fetchSongsFromLocalStorage();
-        //registerReceiver();
+
+        musicBroadCastReceiver = new MusicNotificationReceiver();
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MUSIC_PLAY_OR_PAUSE);
+        intentFilter.addAction(MUSIC_NEXT);
+        intentFilter.addAction(MUSIC_PREV);
+        registerReceiver(musicBroadCastReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(musicBroadCastReceiver);
     }
 
     @Override
@@ -87,11 +99,12 @@ public class MainActivity extends AppCompatActivity implements SongAdapter.OnCli
         mainViewModel.getUserEvent().observe(this, userEvent -> {
             if (userEvent.equals(UserEvent.PLAY)) {
                 activityMainBinding.playButton.setImageResource(R.drawable.ic_play_arrow);
+                showNotification(mainViewModel.getCurrentSong().getValue(), R.drawable.ic_play_arrow_black_24dp);
             } else if (userEvent.equals(UserEvent.SHOW_NOTIFICATION)) {
-                Log.d(MainActivity.class.getName(), "showNotification");
-                showNotification(mainViewModel.getCurrentSong().getValue());
+                showNotification(mainViewModel.getCurrentSong().getValue(), R.drawable.ic_pause_black_24dp);
             } else {
                 activityMainBinding.playButton.setImageResource(R.drawable.ic_pause);
+                showNotification(mainViewModel.getCurrentSong().getValue(), R.drawable.ic_pause_black_24dp);
             }
         });
     }
@@ -124,39 +137,52 @@ public class MainActivity extends AppCompatActivity implements SongAdapter.OnCli
                 ) == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void showNotification(@Nullable Song song) {
+    private void showNotification(@Nullable Song song, @DrawableRes int resourcePlayOrPauseButton) {
         if (song == null) return;
         RemoteViews collapsedView = new RemoteViews(getPackageName(),
                 R.layout.notification_music_collapsed);
 
-        RemoteViews expandedView = new RemoteViews(getPackageName(),
-                R.layout.notification_music_expanded);
-
-        Intent clickIntent = new Intent(this, NotificationReceiver.class);
-        PendingIntent clickPendingIntent = PendingIntent.getBroadcast(this,
-                0, clickIntent, 0);
-
+        collapsedView.setImageViewResource(R.id.ivIconApp, R.drawable.ic_launcher_foreground);
+        collapsedView.setTextViewText(R.id.tvAppName, getString(R.string.app_name));
         collapsedView.setTextViewText(R.id.tvTitle, song.getTitle());
-        collapsedView.setImageViewResource(R.id.ivPlay, R.drawable.ic_play_arrow_black_24dp);
+        collapsedView.setImageViewResource(R.id.ivPlay, resourcePlayOrPauseButton);
         collapsedView.setImageViewResource(R.id.ivNext, R.drawable.ic_skip_next_black_24dp);
         collapsedView.setImageViewResource(R.id.ivPrev, R.drawable.ic_skip_previous_black_24dp);
-        collapsedView.setOnClickPendingIntent(R.id.ivPlay, clickPendingIntent);
-
-        expandedView.setTextViewText(R.id.tvTitle, song.getTitle());
-        expandedView.setImageViewResource(R.id.ivPlay, R.drawable.ic_play_arrow_black_24dp);
-        expandedView.setImageViewResource(R.id.ivNext, R.drawable.ic_skip_next_black_24dp);
-        expandedView.setImageViewResource(R.id.ivPrev, R.drawable.ic_skip_previous_black_24dp);
-        expandedView.setOnClickPendingIntent(R.id.ivPlay, clickPendingIntent);
+        collapsedView.setOnClickPendingIntent(R.id.ivPlay, createActionPendingIntent(MUSIC_PLAY_OR_PAUSE, 1));
+        collapsedView.setOnClickPendingIntent(R.id.ivNext, createActionPendingIntent(MUSIC_NEXT, 2));
+        collapsedView.setOnClickPendingIntent(R.id.ivPrev, createActionPendingIntent(MUSIC_PREV, 3));
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setOngoing(true)
+                .setAutoCancel(true)
                 .setCustomContentView(collapsedView)
-                .setCustomBigContentView(expandedView)
-                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                .setPriority(Notification.PRIORITY_MAX)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .build();
 
         notificationManagerCompat.notify(1, notification);
+    }
+
+    private PendingIntent createActionPendingIntent(String action, int requestCode) {
+        Intent intent = new Intent(action);
+        return PendingIntent.getBroadcast(this,
+                requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    public class MusicNotificationReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null && intent.getAction() != null) {
+                if (intent.getAction().equals(MUSIC_PLAY_OR_PAUSE)) {
+                    mainViewModel.playOrPause();
+                } else if (intent.getAction().equals(MUSIC_NEXT)) {
+                    mainViewModel.playNext();
+                } else if (intent.getAction().equals(MUSIC_PREV)) {
+                    mainViewModel.playPrev();
+                }
+            }
+        }
     }
 
 }
