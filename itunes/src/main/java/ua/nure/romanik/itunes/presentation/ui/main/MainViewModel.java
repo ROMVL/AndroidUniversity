@@ -22,12 +22,11 @@ import ua.nure.romanik.itunes.data.model.Song;
 
 public class MainViewModel extends AndroidViewModel {
 
-    private MediaPlayer mediaPlayer = new MediaPlayer();;
+    private MediaPlayer mediaPlayer = new MediaPlayer();
     private MutableLiveData<List<Song>> songsLiveData = new MutableLiveData<>();
     private MutableLiveData<Song> currentSongLiveData = new MutableLiveData<>();
     private MutableLiveData<Throwable> errorLiveData = new MutableLiveData<>();
-    private MutableLiveData<Integer> durationLiveData = new MutableLiveData<>();
-    private MutableLiveData<Integer> currentPositionLiveData = new MutableLiveData<>();
+    private MutableLiveData<UserEvent> userEventLiveData = new MutableLiveData<>();
 
     private int currentIndexSong;
 
@@ -52,13 +51,7 @@ public class MainViewModel extends AndroidViewModel {
         return currentSongLiveData;
     }
 
-    public LiveData<Integer> getDurationLiveData() {
-        return durationLiveData;
-    }
-
-    public LiveData<Integer> getCurrentPositionLiveData() {
-        return currentPositionLiveData;
-    }
+    LiveData<UserEvent> getUserEvent() { return userEventLiveData; }
 
     void fetchSongsFromLocalStorage() {
         List<Song> songs = new ArrayList<>();
@@ -99,8 +92,10 @@ public class MainViewModel extends AndroidViewModel {
             mediaPlayer.setDataSource(getApplication(), trackUri);
             mediaPlayer.prepare();
             mediaPlayer.start();
-            durationLiveData.setValue(mediaPlayer.getDuration());
+            mediaPlayer.setOnCompletionListener(mPlayer -> playNext());
+            userEventLiveData.setValue(UserEvent.PAUSE);
             currentSongLiveData.setValue(song);
+            userEventLiveData.setValue(UserEvent.SHOW_NOTIFICATION);//showNotification2(song);
         } catch (IOException e) {
             errorLiveData.setValue(e);
         }
@@ -109,8 +104,10 @@ public class MainViewModel extends AndroidViewModel {
     public void playOrPause() {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
+            userEventLiveData.setValue(UserEvent.PLAY);
         } else {
             mediaPlayer.start();
+            userEventLiveData.setValue(UserEvent.PAUSE);
         }
     }
 

@@ -1,21 +1,35 @@
 package ua.nure.romanik.itunes.presentation.ui.main;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.Manifest;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.RemoteViews;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import ua.nure.romanik.itunes.R;
 import ua.nure.romanik.itunes.data.model.Song;
 import ua.nure.romanik.itunes.databinding.ActivityMainBinding;
+import ua.nure.romanik.itunes.presentation.NotificationReceiver;
 import ua.nure.romanik.itunes.presentation.adapter.SongAdapter;
+
+import static ua.nure.romanik.itunes.App.CHANNEL_ID;
 
 public class MainActivity extends AppCompatActivity implements SongAdapter.OnClickSongListener {
 
@@ -25,22 +39,41 @@ public class MainActivity extends AppCompatActivity implements SongAdapter.OnCli
     private ActivityMainBinding activityMainBinding;
     private SongAdapter songAdapter;
     private MainViewModel mainViewModel;
+    private NotificationManagerCompat notificationManagerCompat;
+
+    private BroadcastReceiver musicNotificationReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mainViewModel = new MainViewModelFactory(getApplication()).create(MainViewModel.class);
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+        notificationManagerCompat = NotificationManagerCompat.from(this);
+        mainViewModel = new ViewModelProvider(
+                this.getViewModelStore(),
+                new MainViewModelFactory(getApplication())
+        ).get(MainViewModel.class);
+
         activityMainBinding.setViewModel(mainViewModel);
         activityMainBinding.setLifecycleOwner(this);
         initSongsList();
         initObservers();
         if (!isPermissionGranted(permissions[0])) requestPermissions(permissions, permissionRequestCode);
         else mainViewModel.fetchSongsFromLocalStorage();
+        //registerReceiver();
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults
+    ) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             mainViewModel.fetchSongsFromLocalStorage();
         } else {
@@ -51,6 +84,16 @@ public class MainActivity extends AppCompatActivity implements SongAdapter.OnCli
     private void initObservers() {
         mainViewModel.getSongs().observe(this, songs -> songAdapter.setSongs(songs));
         mainViewModel.getErrorLiveData().observe(this, this::showErrorMessage);
+        mainViewModel.getUserEvent().observe(this, userEvent -> {
+            if (userEvent.equals(UserEvent.PLAY)) {
+                activityMainBinding.playButton.setImageResource(R.drawable.ic_play_arrow);
+            } else if (userEvent.equals(UserEvent.SHOW_NOTIFICATION)) {
+                Log.d(MainActivity.class.getName(), "showNotification");
+                showNotification(mainViewModel.getCurrentSong().getValue());
+            } else {
+                activityMainBinding.playButton.setImageResource(R.drawable.ic_pause);
+            }
+        });
     }
 
     private void initSongsList() {
@@ -80,4 +123,40 @@ public class MainActivity extends AppCompatActivity implements SongAdapter.OnCli
                         permission
                 ) == PackageManager.PERMISSION_GRANTED;
     }
+
+    private void showNotification(@Nullable Song song) {
+        if (song == null) return;
+        RemoteViews collapsedView = new RemoteViews(getPackageName(),
+                R.layout.notification_music_collapsed);
+
+        RemoteViews expandedView = new RemoteViews(getPackageName(),
+                R.layout.notification_music_expanded);
+
+        Intent clickIntent = new Intent(this, NotificationReceiver.class);
+        PendingIntent clickPendingIntent = PendingIntent.getBroadcast(this,
+                0, clickIntent, 0);
+
+        collapsedView.setTextViewText(R.id.tvTitle, song.getTitle());
+        collapsedView.setImageViewResource(R.id.ivPlay, R.drawable.ic_play_arrow_black_24dp);
+        collapsedView.setImageViewResource(R.id.ivNext, R.drawable.ic_skip_next_black_24dp);
+        collapsedView.setImageViewResource(R.id.ivPrev, R.drawable.ic_skip_previous_black_24dp);
+        collapsedView.setOnClickPendingIntent(R.id.ivPlay, clickPendingIntent);
+
+        expandedView.setTextViewText(R.id.tvTitle, song.getTitle());
+        expandedView.setImageViewResource(R.id.ivPlay, R.drawable.ic_play_arrow_black_24dp);
+        expandedView.setImageViewResource(R.id.ivNext, R.drawable.ic_skip_next_black_24dp);
+        expandedView.setImageViewResource(R.id.ivPrev, R.drawable.ic_skip_previous_black_24dp);
+        expandedView.setOnClickPendingIntent(R.id.ivPlay, clickPendingIntent);
+
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setOngoing(true)
+                .setCustomContentView(collapsedView)
+                .setCustomBigContentView(expandedView)
+                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                .build();
+
+        notificationManagerCompat.notify(1, notification);
+    }
+
 }
