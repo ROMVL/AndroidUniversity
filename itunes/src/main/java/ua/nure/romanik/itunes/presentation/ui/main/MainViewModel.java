@@ -1,14 +1,22 @@
 package ua.nure.romanik.itunes.presentation.ui.main;
 
 import android.app.Application;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.widget.RemoteViews;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -18,7 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import ua.nure.romanik.itunes.R;
 import ua.nure.romanik.itunes.data.model.Song;
+
+import static ua.nure.romanik.itunes.App.CHANNEL_ID;
+import static ua.nure.romanik.itunes.presentation.ui.main.MainActivity.MUSIC_NEXT;
+import static ua.nure.romanik.itunes.presentation.ui.main.MainActivity.MUSIC_PLAY_OR_PAUSE;
+import static ua.nure.romanik.itunes.presentation.ui.main.MainActivity.MUSIC_PREV;
 
 public class MainViewModel extends AndroidViewModel {
 
@@ -27,11 +41,13 @@ public class MainViewModel extends AndroidViewModel {
     private MutableLiveData<Song> currentSongLiveData = new MutableLiveData<>();
     private MutableLiveData<Throwable> errorLiveData = new MutableLiveData<>();
     private MutableLiveData<UserEvent> userEventLiveData = new MutableLiveData<>();
+    private NotificationManagerCompat notificationManagerCompat;
 
     private int currentIndexSong;
 
     MainViewModel(@NonNull Application application) {
         super(application);
+        notificationManagerCompat = NotificationManagerCompat.from(application);
     }
 
     @Override
@@ -95,7 +111,8 @@ public class MainViewModel extends AndroidViewModel {
             mediaPlayer.setOnCompletionListener(mPlayer -> playNext());
             userEventLiveData.setValue(UserEvent.PAUSE);
             currentSongLiveData.setValue(song);
-            userEventLiveData.setValue(UserEvent.SHOW_NOTIFICATION);//showNotification2(song);
+            showNotification(song, R.drawable.ic_pause_black_24dp);
+            userEventLiveData.setValue(UserEvent.SHOW_NOTIFICATION);
         } catch (IOException e) {
             errorLiveData.setValue(e);
         }
@@ -105,9 +122,11 @@ public class MainViewModel extends AndroidViewModel {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             userEventLiveData.setValue(UserEvent.PLAY);
+            showNotification(currentSongLiveData.getValue(), R.drawable.ic_play_arrow_black_24dp);
         } else {
             mediaPlayer.start();
             userEventLiveData.setValue(UserEvent.PAUSE);
+            showNotification(currentSongLiveData.getValue(), R.drawable.ic_pause_black_24dp);
         }
     }
 
@@ -128,5 +147,39 @@ public class MainViewModel extends AndroidViewModel {
             }
         }
     }
+
+    private void showNotification(@Nullable Song song, @DrawableRes int resourcePlayOrPauseButton) {
+        if (song == null) return;
+        RemoteViews collapsedView = new RemoteViews(getApplication().getPackageName(),
+                R.layout.notification_music_collapsed);
+
+        collapsedView.setImageViewResource(R.id.ivIconApp, R.drawable.ic_launcher_foreground);
+        collapsedView.setTextViewText(R.id.tvAppName, getApplication().getString(R.string.app_name));
+        collapsedView.setTextViewText(R.id.tvTitle, song.getTitle());
+        collapsedView.setImageViewResource(R.id.ivPlay, resourcePlayOrPauseButton);
+        collapsedView.setImageViewResource(R.id.ivNext, R.drawable.ic_skip_next_black_24dp);
+        collapsedView.setImageViewResource(R.id.ivPrev, R.drawable.ic_skip_previous_black_24dp);
+        collapsedView.setOnClickPendingIntent(R.id.ivPlay, createActionPendingIntent(MUSIC_PLAY_OR_PAUSE, 1));
+        collapsedView.setOnClickPendingIntent(R.id.ivNext, createActionPendingIntent(MUSIC_NEXT, 2));
+        collapsedView.setOnClickPendingIntent(R.id.ivPrev, createActionPendingIntent(MUSIC_PREV, 3));
+
+        Notification notification = new NotificationCompat.Builder(getApplication(), CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setOngoing(true)
+                .setAutoCancel(true)
+                .setCustomContentView(collapsedView)
+                .setPriority(Notification.PRIORITY_MAX)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .build();
+
+        notificationManagerCompat.notify(1, notification);
+    }
+
+    private PendingIntent createActionPendingIntent(String action, int requestCode) {
+        Intent intent = new Intent(action);
+        return PendingIntent.getBroadcast(getApplication(),
+                requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
 
 }
