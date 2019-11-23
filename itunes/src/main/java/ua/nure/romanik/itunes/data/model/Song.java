@@ -36,4 +36,8 @@ public class Song {
         this.artist = artist;
     }
 
+    public String getFullInfo() {
+        return this.title + " - " + this.getArtist();
+    }
+
 }

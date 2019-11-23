@@ -23,6 +23,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -68,7 +69,9 @@ public class MainViewModel extends AndroidViewModel {
         return currentSongLiveData;
     }
 
-    LiveData<UserEvent> getUserEvent() { return userEventLiveData; }
+    LiveData<UserEvent> getUserEvent() {
+        return userEventLiveData;
+    }
 
     void fetchSongsFromLocalStorage() {
         List<Song> songs = new ArrayList<>();
@@ -156,7 +159,13 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public void shufflePlayList() {
-
+        if (songsLiveData.getValue() != null) {
+            List<Song> songsShuffled = songsLiveData.getValue();
+            Collections.shuffle(songsShuffled);
+            currentIndexSong = 0;
+            songsLiveData.setValue(songsShuffled);
+            startSong(songsShuffled.get(currentIndexSong));
+        }
     }
 
     public void repeatMelody() {

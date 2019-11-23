@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -15,7 +16,9 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.OrientationHelper;
 
 import ua.nure.romanik.itunes.R;
 import ua.nure.romanik.itunes.data.model.Song;
@@ -40,6 +43,9 @@ public class MainActivity extends AppCompatActivity implements SongAdapter.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+        setSupportActionBar(activityMainBinding.toolbarMainActivity.toolbar);
+
         mainViewModel = new ViewModelProvider(
                 this.getViewModelStore(),
                 new MainViewModelFactory(getApplication())
@@ -85,26 +91,28 @@ public class MainActivity extends AppCompatActivity implements SongAdapter.OnCli
         mainViewModel.getErrorLiveData().observe(this, this::showErrorMessage);
         mainViewModel.getUserEvent().observe(this, userEvent -> {
             if (userEvent.equals(UserEvent.PLAY)) {
-                activityMainBinding.playButton.setImageResource(R.drawable.ic_play_arrow);
+                activityMainBinding.mediaPlayerControl.ivPlayPause.setImageResource(R.drawable.ic_play_arrow_black_24dp);
             } else if (userEvent.equals(UserEvent.REPEAT_OFF)) {
-                activityMainBinding.repeatButton.setImageResource(R.drawable.ic_repeat_off);
+                activityMainBinding.mediaPlayerControl.ivRepeat.setImageResource(R.drawable.ic_repeat_off);
             } else if (userEvent.equals(UserEvent.REPEAT_ON)) {
-                activityMainBinding.repeatButton.setImageResource(R.drawable.ic_repeat_on);
+                activityMainBinding.mediaPlayerControl.ivRepeat.setImageResource(R.drawable.ic_repeat_on);
             } else {
-                activityMainBinding.playButton.setImageResource(R.drawable.ic_pause);
+                activityMainBinding.mediaPlayerControl.ivPlayPause.setImageResource(R.drawable.ic_pause_black_24dp);
             }
         });
     }
 
     private void initSongsList() {
         songAdapter = new SongAdapter(this);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this,
-                layoutManager.getOrientation());
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
+            activityMainBinding.rvSongs.setLayoutManager(gridLayoutManager);
+        } else {
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+            activityMainBinding.rvSongs.setLayoutManager(layoutManager);
+        }
         activityMainBinding.rvSongs.setAdapter(songAdapter);
-        activityMainBinding.rvSongs.setLayoutManager(layoutManager);
         activityMainBinding.rvSongs.setHasFixedSize(true);
-        activityMainBinding.rvSongs.addItemDecoration(dividerItemDecoration);
     }
 
     @Override

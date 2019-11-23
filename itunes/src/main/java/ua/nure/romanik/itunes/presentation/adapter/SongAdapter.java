@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -23,8 +24,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
     }
 
     public void setSongs(List<Song> songs) {
+        SongDiffUtilsCallback songDiffUtilsCallback = new SongDiffUtilsCallback(this.songs, songs);
+        DiffUtil.DiffResult songDiffUtilResult = DiffUtil.calculateDiff(songDiffUtilsCallback);
         this.songs = songs;
-        notifyDataSetChanged();
+        songDiffUtilResult.dispatchUpdatesTo(this);
     }
 
     @NonNull

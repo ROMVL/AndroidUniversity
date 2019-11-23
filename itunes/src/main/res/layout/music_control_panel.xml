@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="ua.nure.romanik.itunes.presentation.ui.main.MainViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorLightGray"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageView
+            android:id="@+id/inNextSong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:padding="12dp"
+            android:onClick="@{() -> viewModel.playNext()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/ivPlayPause"
+            app:layout_constraintTop_toBottomOf="@+id/tvSongInfo"
+            app:srcCompat="@drawable/ic_skip_next_black_24dp" />
+
+        <ImageView
+            android:id="@+id/ivPlayPause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:onClick="@{() -> viewModel.playOrPause()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/inNextSong"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/ivPrev"
+            app:layout_constraintTop_toBottomOf="@+id/tvSongInfo"
+            app:srcCompat="@drawable/ic_play_arrow_black_24dp" />
+
+        <ImageView
+            android:id="@+id/ivPrev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:onClick="@{() -> viewModel.playPrev()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ivPlayPause"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/ivRepeat"
+            app:layout_constraintTop_toBottomOf="@+id/tvSongInfo"
+            app:srcCompat="@drawable/ic_skip_previous_black_24dp" />
+
+        <ImageView
+            android:id="@+id/ivRepeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:onClick="@{() -> viewModel.repeatMelody()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ivPrev"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/ivShuffle"
+            app:layout_constraintTop_toBottomOf="@+id/tvSongInfo"
+            app:srcCompat="@drawable/ic_repeat_off" />
+
+        <ImageView
+            android:id="@+id/ivShuffle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:padding="12dp"
+            android:onClick="@{() -> viewModel.shufflePlayList()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ivRepeat"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvSongInfo"
+            app:srcCompat="@drawable/ic_shuffle_on" />
+
+        <TextView
+            android:id="@+id/tvSongInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/colorBlack"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:text="@{viewModel.currentSong == null ? @string/choose_song : viewModel.currentSong.fullInfo}"
+            app:layout_constraintBottom_toTopOf="@+id/inNextSong"
+            app:layout_constraintEnd_toEndOf="@+id/inNextSong"
+            app:layout_constraintStart_toStartOf="@+id/ivShuffle"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Papaya Moloko Shokolad - Timberlake" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

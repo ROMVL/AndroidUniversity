@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">iTunes Romanik</string>
+
+    <string name="choose_song">Choose song</string>
 </resources>
