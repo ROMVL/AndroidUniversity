@@ -11,7 +11,7 @@ public class MainViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
     private final Application application;
 
-    public MainViewModelFactory(Application application) {
+    MainViewModelFactory(Application application) {
         super();
         this.application = application;
     }

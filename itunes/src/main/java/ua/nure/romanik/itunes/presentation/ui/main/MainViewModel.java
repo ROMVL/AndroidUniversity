@@ -7,9 +7,15 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import androidx.annotation.DrawableRes;
@@ -30,6 +36,8 @@ import java.util.Objects;
 import ua.nure.romanik.itunes.R;
 import ua.nure.romanik.itunes.data.model.Song;
 
+import static android.content.Context.AUDIO_SERVICE;
+import static android.content.Context.SENSOR_SERVICE;
 import static ua.nure.romanik.itunes.App.CHANNEL_ID;
 import static ua.nure.romanik.itunes.presentation.ui.main.MainActivity.MUSIC_NEXT;
 import static ua.nure.romanik.itunes.presentation.ui.main.MainActivity.MUSIC_PLAY_OR_PAUSE;
@@ -43,6 +51,10 @@ public class MainViewModel extends AndroidViewModel {
     private MutableLiveData<Throwable> errorLiveData = new MutableLiveData<>();
     private MutableLiveData<UserEvent> userEventLiveData = new MutableLiveData<>();
     private NotificationManagerCompat notificationManagerCompat;
+    private SensorManager sensorManager;
+    private SensorEventListener sensorEvent;
+    private Sensor lightSensor;
+    private AudioManager audioManager;
 
     private int currentIndexSong;
     private boolean isRepeatMode = false;
@@ -50,11 +62,39 @@ public class MainViewModel extends AndroidViewModel {
     MainViewModel(@NonNull Application application) {
         super(application);
         notificationManagerCompat = NotificationManagerCompat.from(application);
+        audioManager = (AudioManager) getApplication().getSystemService(AUDIO_SERVICE);
+        sensorManager = (SensorManager) getApplication().getSystemService(SENSOR_SERVICE);
+        if (sensorManager != null) {
+            lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+            sensorEvent = new SensorEventListener() {
+                float prevValue = 0.0F;
+                @Override
+                public void onSensorChanged(SensorEvent event) {
+                    Log.d(MainViewModel.class.getName(), String.valueOf(event.values[0]));
+                    float lightValue = event.values[0] / 50;
+                    if (lightValue > prevValue) {
+                        audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
+                    } else {
+                        audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
+                    }
+                    prevValue = lightValue;
+                }
+
+                @Override
+                public void onAccuracyChanged(Sensor sensor, int accuracy) {
+                    Log.d(MainViewModel.class.getName(), "accuracy changed!");
+                }
+            };
+            sensorManager.registerListener(sensorEvent, lightSensor, SensorManager.SENSOR_DELAY_FASTEST);
+        }
     }
 
     @Override
     protected void onCleared() {
         super.onCleared();
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(sensorEvent, lightSensor);
+        }
     }
 
     LiveData<List<Song>> getSongs() {
@@ -161,10 +201,12 @@ public class MainViewModel extends AndroidViewModel {
     public void shufflePlayList() {
         if (songsLiveData.getValue() != null) {
             List<Song> songsShuffled = songsLiveData.getValue();
-            Collections.shuffle(songsShuffled);
-            currentIndexSong = 0;
-            songsLiveData.setValue(songsShuffled);
-            startSong(songsShuffled.get(currentIndexSong));
+            if (!songsShuffled.isEmpty()) {
+                Collections.shuffle(songsShuffled);
+                currentIndexSong = 0;
+                songsLiveData.setValue(songsShuffled);
+                startSong(songsShuffled.get(currentIndexSong));
+            }
         }
     }
 
