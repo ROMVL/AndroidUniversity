@@ -11,6 +11,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioDeviceCallback;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -67,12 +68,13 @@ public class MainViewModel extends AndroidViewModel {
         if (sensorManager != null) {
             lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
             sensorEvent = new SensorEventListener() {
+                float mediumLight = 128.0F;
                 float prevValue = 0.0F;
                 @Override
                 public void onSensorChanged(SensorEvent event) {
                     Log.d(MainViewModel.class.getName(), String.valueOf(event.values[0]));
-                    float lightValue = event.values[0] / 50;
-                    if (lightValue > prevValue) {
+                    float lightValue = event.values[0];
+                    if (mediumLight >= lightValue && prevValue < mediumLight) {
                         audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
                     } else {
                         audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
@@ -82,7 +84,7 @@ public class MainViewModel extends AndroidViewModel {
 
                 @Override
                 public void onAccuracyChanged(Sensor sensor, int accuracy) {
-                    Log.d(MainViewModel.class.getName(), "accuracy changed!");
+                    Log.d(MainViewModel.class.getName(), "accuracy changed: " + accuracy);
                 }
             };
             sensorManager.registerListener(sensorEvent, lightSensor, SensorManager.SENSOR_DELAY_FASTEST);
