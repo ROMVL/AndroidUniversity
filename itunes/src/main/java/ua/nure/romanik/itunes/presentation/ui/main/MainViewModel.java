@@ -63,6 +63,10 @@ public class MainViewModel extends AndroidViewModel {
     MainViewModel(@NonNull Application application) {
         super(application);
         notificationManagerCompat = NotificationManagerCompat.from(application);
+        registerSensors();
+    }
+
+    private void registerSensors() {
         audioManager = (AudioManager) getApplication().getSystemService(AUDIO_SERVICE);
         sensorManager = (SensorManager) getApplication().getSystemService(SENSOR_SERVICE);
         if (sensorManager != null) {
