@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.hardware.Sensor;
@@ -16,6 +17,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -56,6 +59,7 @@ public class MainViewModel extends AndroidViewModel {
     private SensorEventListener sensorEvent;
     private Sensor lightSensor;
     private AudioManager audioManager;
+    private boolean ongoingCall = false;
 
     private int currentIndexSong;
     private boolean isRepeatMode = false;
@@ -79,9 +83,9 @@ public class MainViewModel extends AndroidViewModel {
                     Log.d(MainViewModel.class.getName(), String.valueOf(event.values[0]));
                     float lightValue = event.values[0];
                     if (mediumLight >= lightValue && prevValue < mediumLight) {
-                        audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
+                        if (mediaPlayer.isPlaying()) mediaPlayer.pause();
                     } else {
-                        audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
+                        if (!mediaPlayer.isPlaying()) mediaPlayer.start();
                     }
                     prevValue = lightValue;
                 }
@@ -93,6 +97,7 @@ public class MainViewModel extends AndroidViewModel {
             };
             sensorManager.registerListener(sensorEvent, lightSensor, SensorManager.SENSOR_DELAY_FASTEST);
         }
+        callStateListener();
     }
 
     @Override
@@ -258,5 +263,36 @@ public class MainViewModel extends AndroidViewModel {
                 requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
+    private void callStateListener() {
+        TelephonyManager telephonyManager = (TelephonyManager) getApplication().getSystemService(Context.TELEPHONY_SERVICE);
+        PhoneStateListener phoneStateListener = new PhoneStateListener() {
+            @Override
+            public void onCallStateChanged(int state, String incomingNumber) {
+                switch (state) {
+                    case TelephonyManager.CALL_STATE_OFFHOOK:
+                    case TelephonyManager.CALL_STATE_RINGING:
+                        mediaPlayer.pause();
+                        ongoingCall = true;
+                        break;
+                    case TelephonyManager.CALL_STATE_IDLE:
+                        if (mediaPlayer != null) {
+                            if (ongoingCall) {
+                                ongoingCall = false;
+                                try {
+                                    Thread.sleep(5000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                mediaPlayer.start();
+                            }
+                        }
+                        break;
+                }
+            }
+        };
+        assert telephonyManager != null;
+        telephonyManager.listen(phoneStateListener,
+                PhoneStateListener.LISTEN_CALL_STATE);
+    }
 
 }
